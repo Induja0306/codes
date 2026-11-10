@@ -1,0 +1,61 @@
+clc;
+clear all;
+close all;
+
+cell1 = [0,0];
+cell2 = [100,0];
+cellradius = 50;
+handoffthreshold = 0.6;
+userpos = [0,0];
+velocity = [1,0];
+currentcell = 1;
+handoffoccured = false;
+
+figure;
+hold on;
+axis equal;
+xlim([-50 150]);
+ylim([-50 50]);
+title('Simple handoff mechanism');
+xlabel('X');
+ylabel('Y');
+
+viscircles(cell1,cellradius,'color','b');
+viscircles(cell2,cellradius,'color','r');
+
+plot(cell1(1),cell1(2),'ro','MarkerSize',10,'LineWidth',2);
+plot(cell2(1),cell2(2),'ro','MarkerSize',10,'LineWidth',2);
+
+for t = 1:120
+
+    userpos = userpos + velocity;
+
+    dist1 = norm(userpos-cell1);
+    dist2 = norm(userpos-cell2);
+
+    if currentcell == 1 && dist1 > handoffthreshold*cellradius && dist2 < cellradius
+
+        handoffoccured = true;
+        currentcell = 2;
+
+        fprintf('Handoff occured at time %d seconds New Cell:%d\n',t,currentcell);
+
+    end
+
+    if currentcell == 1
+        usercolor = 'b';
+    else
+        usercolor = 'r';
+    end
+
+    plot(userpos(1),userpos(2),'o','color',usercolor,'markersize',5);
+
+    pause(0.05);
+
+end
+
+if handoffoccured
+    disp('Handoff stimulation completed successfully');
+else
+    disp('No handoff occured during stimulation');
+end
