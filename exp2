@@ -1,0 +1,70 @@
+clc;
+clear all;
+close all;
+
+n = 4;
+numcells = 7;
+userspercell = 15;
+R = 500;
+
+groupcolors = {'r','g','b','m'};
+
+D = R*sqrt(3*n);
+d = sqrt(3)*R;
+
+angles = (0:60:300)*pi/180;
+
+cellcentres = [0 0; d*cos(angles(:)),d*sin(angles(:))];
+
+cellfreq = zeros(1,numcells);
+
+for c = 1:numcells
+    for f = 1:n
+
+        samegroup = find(cellfreq == f);
+
+        dists = sqrt(sum((cellcentres(samegroup,:)-cellcentres(c,:)).^2,2));
+
+        if all(dists >= D-1e-6)
+            cellfreq(c) = f;
+            break;
+        end
+
+    end
+end
+
+figure('color','w');
+hold on;
+axis equal;
+grid on;
+
+title(sprintf('Frequency reuse (N=%d), D=%.0fm',n,D));
+xlabel('X(m)');
+ylabel('Y(m)');
+
+for c = 1:numcells
+
+    f = cellfreq(c);
+
+    a = (0:5)*pi/3+pi/6;
+
+    patch(R*cos(a)+cellcentres(c,1), ...
+          R*sin(a)+cellcentres(c,2), ...
+          groupcolors(f),'FaceAlpha',0.25,'LineWidth',2);
+
+    text(cellcentres(c,1),cellcentres(c,2), ...
+         sprintf('Cell\n%d\n%d',c,f), ...
+         'HorizontalAlignment','center','FontWeight','Bold');
+
+    r = R*sqrt(rand(userspercell,1));
+
+    th = 2*pi*rand(userspercell,1);
+
+    plot(cellcentres(c,1)+r.*cos(th), ...
+         cellcentres(c,2)+r.*sin(th), ...
+         'k.','MarkerSize',10);
+
+end
+
+fprintf('\nDone:%d cells,%d user each, N=%d\n', ...
+        numcells,userspercell,n);
