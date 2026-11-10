@@ -1,0 +1,42 @@
+clc;
+clear all;
+close all;
+
+freq = 900e6;
+d = 10000:10000:100e3;
+
+h_tx = 100;
+h_rx = 5;
+
+fspl = (20*log10(d))+(20*log10(freq))-147.55; % free space
+
+amu = [30 34 37 40 45 50 54 56 58 60];
+
+c = amu-(6.02)-(4.43);
+
+l_okumura = fspl+c; % okumura
+
+a_h = (1.1*log10(freq)-0.7)*h_rx-((1.56*log10(freq)-0.8)); % Correction factor for mobile station height
+
+% a_h = 3.2*(log10(11.75*h_rx)^2)-4.97;
+
+L_hata = 69.55 + 26.16*log10(freq/1e6) - 13.82*log10(h_tx) - a_h + (44.9 - 6.55*log10(h_tx))*log10(d/1000); % Path Loss in dB % Hata
+
+figure;
+
+semilogx(d,fspl,'r','LineWidth',1.5);
+hold on;
+
+semilogx(d,l_okumura,'g','LineWidth',1.5);
+
+semilogx(d,L_hata,'b','LineWidth',1.5);
+
+grid on;
+
+xlabel('Distance(m)');
+ylabel('Path Loss (dB)');
+
+title('Outdoor Path Loss Propagation Models');
+
+legend('Free Space', 'Okumura', 'Hata');
+hold off;
