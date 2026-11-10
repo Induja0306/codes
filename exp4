@@ -1,0 +1,49 @@
+clc;
+clear all;
+close all;
+
+f_Hz = 2.4e9;
+f_MHz = f_Hz/1e6;
+
+c = 3e8;
+
+lambda = c/f_Hz;
+
+d = 1:0.5:30;
+
+do = 1;
+
+PL_fs = (20*log10(d)+20*log10(f_Hz))-147.55;
+
+n = 3;
+sigma = 4;
+
+PL_do = 20*log10(4*pi*do/lambda);
+
+PL_log = PL_do+10*n*log10(d/do);
+
+X_sigma = sigma*randn(size(d));
+
+PL_log_shadow = PL_log+X_sigma;
+
+figure;
+
+plot(d,PL_fs,'k--','LineWidth',2);
+hold on;
+
+plot(d,PL_log,'b','LineWidth',2);
+
+plot(d,PL_log_shadow,'r','LineWidth',2);
+
+grid on;
+
+xlabel('Distance(m)');
+ylabel('Path Loss (dB)');
+
+title('Comparison of Path Loss Models');
+
+legend('Free Space', 'Log-Distance (NO shadowing)', ...
+       'Log-Distance (With shadowing)', ...
+       'Location','northwest');
+
+hold off;
